@@ -1,4 +1,7 @@
 ---
+# Note: In production, this would point to a separate Git repository
+# For this demo, we use the same repository with different reconciliation intervals
+# to demonstrate multi-source configuration patterns  
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
@@ -8,10 +11,8 @@ spec:
   interval: 3m0s
   ref:
     branch: main
-  url: file:///home/jnssa/GitOps/flux-bootstrap-demo
-  ignore: |
-    # exclude all
-    /*
-    # include apps/backend
-    !/apps/backend/
+  url: ssh://git@github.com/your-org/backend-api.git
+  # Uncomment and configure for real repos:
+  # secretRef:
+  #   name: backend-git-auth
 
