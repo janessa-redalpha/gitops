@@ -3,5 +3,7 @@ kind: Kustomization
 resources:
 - gotk-components.yaml
 - gotk-sync.yaml
+- ../sources
+- ../apps
 patchesStrategicMerge:
 - patch-source-controller.yaml
