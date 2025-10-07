@@ -8,7 +8,7 @@ spec:
   interval: 1m0s
   ref:
     branch: main
-  url: file:///home/jnssa/GitOps/flux-bootstrap-demo
+  url: https://github.com/jnssa/flux-bootstrap-demo.git
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
