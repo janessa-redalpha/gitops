@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: versioned-app
+  labels:
+    app: versioned-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: versioned-app
+  template:
+    metadata:
+      labels:
+        app: versioned-app
+        version: "1.0.0"
+    spec:
+      containers:
+      - name: app
+        image: nginx:1.21
+        ports:
+        - containerPort: 80
+        env:
+        - name: APP_VERSION
+          value: "1.0.0"
+        - name: RELEASE_TYPE
+          value: "stable"
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "50m"
+          limits:
+            memory: "64Mi"
+            cpu: "100m"
+
