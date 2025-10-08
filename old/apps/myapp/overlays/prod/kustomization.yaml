@@ -1,0 +1,114 @@
+---
+# Production overlay for myapp
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: myapp-prod
+  labels:
+    app.kubernetes.io/name: myapp
+    app.kubernetes.io/part-of: myapp
+    environment: prod
+
+resources:
+  - ../../base
+
+namespace: myapp-prod
+
+namePrefix: prod-
+
+commonLabels:
+  environment: prod
+  app.kubernetes.io/instance: myapp-prod
+
+images:
+  - name: myapp
+    newTag: v1.2.3
+
+patches:
+  - target:
+      kind: Deployment
+      name: myapp
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 3
+      - op: replace
+        path: /spec/template/spec/containers/0/env/0/value
+        value: "prod"
+      - op: replace
+        path: /spec/template/spec/containers/0/env/1/value
+        value: "us-west-2"
+      - op: replace
+        path: /spec/template/spec/containers/0/env/2/value
+        value: "warn"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "256Mi"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "200m"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "512Mi"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: "500m"
+
+  - target:
+      kind: Ingress
+      name: myapp
+    patch: |-
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: "myapp.example.com"
+      - op: replace
+        path: /spec/rules/0/host
+        value: "myapp.example.com"
+
+configMapGenerator:
+  - name: myapp-config
+    behavior: merge
+    literals:
+      - LOG_LEVEL=warn
+      - METRICS_ENABLED=true
+      - TRACING_ENABLED=true
+      - DEBUG_MODE=false
+      - FEATURE_FLAG_A=true
+      - FEATURE_FLAG_B=true
+      - PERFORMANCE_MODE=high
+
+secretGenerator:
+  - name: myapp-secrets
+    behavior: merge
+    literals:
+      - DATABASE_URL=postgresql://prod-user:prod-pass@prod-db:5432/myapp_prod
+      - API_KEY=prod-api-key-abcdef
+      - JWT_SECRET=prod-jwt-secret-key-very-secure
+
+patchesStrategicMerge:
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: myapp
+    spec:
+      template:
+        spec:
+          containers:
+          - name: myapp
+            env:
+            - name: ENVIRONMENT
+              value: "prod"
+            - name: REGION
+              value: "us-west-2"
+            - name: LOG_LEVEL
+              value: "warn"
+            - name: DEBUG_MODE
+              value: "false"
+            - name: PERFORMANCE_MODE
+              value: "high"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            fsGroup: 2000

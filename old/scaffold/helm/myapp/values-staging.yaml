@@ -1,0 +1,69 @@
+# Staging Environment Values
+# Override default values for staging environment
+
+replicaCount: 2
+
+image:
+  repository: ghcr.io/org/myapp
+  tag: "staging-latest"
+  pullPolicy: IfNotPresent
+
+# Staging-specific annotations
+podAnnotations:
+  app.env: "staging"
+  app.version: "staging"
+  monitoring.prometheus.io/scrape: "true"
+
+# Staging resource limits (moderate)
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+# Enable autoscaling for staging
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+# Application configuration for staging
+config:
+  appMode: "staging"
+  greeting: "Hello from Staging Environment!"
+  debug: false
+
+# Environment variables
+env:
+  - name: NODE_ENV
+    value: "staging"
+  - name: LOG_LEVEL
+    value: "info"
+  - name: METRICS_ENABLED
+    value: "true"
+
+# Health check configuration
+healthCheck:
+  enabled: true
+  path: /health
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Secrets enabled in staging (managed by external-secrets)
+secrets:
+  enabled: true
+  # These will be populated by external-secrets operator
+  apiKey: ""
+  databaseUrl: ""

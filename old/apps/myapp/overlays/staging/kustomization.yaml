@@ -1,0 +1,107 @@
+---
+# Staging overlay for myapp
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: myapp-staging
+  labels:
+    app.kubernetes.io/name: myapp
+    app.kubernetes.io/part-of: myapp
+    environment: staging
+
+resources:
+  - ../../base
+
+namespace: myapp-staging
+
+namePrefix: staging-
+
+commonLabels:
+  environment: staging
+  app.kubernetes.io/instance: myapp-staging
+
+images:
+  - name: myapp
+    newTag: v1.2.3-staging
+
+patches:
+  - target:
+      kind: Deployment
+      name: myapp
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+      - op: replace
+        path: /spec/template/spec/containers/0/env/0/value
+        value: "staging"
+      - op: replace
+        path: /spec/template/spec/containers/0/env/1/value
+        value: "us-east-1"
+      - op: replace
+        path: /spec/template/spec/containers/0/env/2/value
+        value: "info"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "128Mi"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "100m"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "256Mi"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: "200m"
+
+  - target:
+      kind: Ingress
+      name: myapp
+    patch: |-
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: "myapp.staging.example.com"
+      - op: replace
+        path: /spec/rules/0/host
+        value: "myapp.staging.example.com"
+
+configMapGenerator:
+  - name: myapp-config
+    behavior: merge
+    literals:
+      - LOG_LEVEL=info
+      - METRICS_ENABLED=true
+      - TRACING_ENABLED=true
+      - DEBUG_MODE=false
+      - FEATURE_FLAG_A=true
+      - FEATURE_FLAG_B=true
+
+secretGenerator:
+  - name: myapp-secrets
+    behavior: merge
+    literals:
+      - DATABASE_URL=postgresql://staging-user:staging-pass@staging-db:5432/myapp_staging
+      - API_KEY=staging-api-key-67890
+      - JWT_SECRET=staging-jwt-secret-key
+
+patchesStrategicMerge:
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: myapp
+    spec:
+      template:
+        spec:
+          containers:
+          - name: myapp
+            env:
+            - name: ENVIRONMENT
+              value: "staging"
+            - name: REGION
+              value: "us-east-1"
+            - name: LOG_LEVEL
+              value: "info"
+            - name: DEBUG_MODE
+              value: "false"

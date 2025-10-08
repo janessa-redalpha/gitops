@@ -1,0 +1,43 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: staging
+
+resources:
+  - ../../base
+
+namePrefix: staging-
+
+replicas:
+  - name: myapp
+    count: 2
+
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: myapp
+      spec:
+        template:
+          spec:
+            containers:
+            - name: myapp
+              env:
+              - name: ENVIRONMENT
+                value: "staging"
+              resources:
+                requests:
+                  memory: "128Mi"
+                  cpu: "200m"
+                limits:
+                  memory: "256Mi"
+                  cpu: "400m"
+    target:
+      kind: Deployment
+      name: myapp
+
+commonLabels:
+  environment: staging
+

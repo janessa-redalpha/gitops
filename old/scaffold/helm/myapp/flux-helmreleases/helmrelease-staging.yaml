@@ -1,0 +1,40 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: myapp-staging
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/name: myapp
+    app.kubernetes.io/instance: myapp-staging
+    environment: staging
+spec:
+  interval: 2m
+  chart:
+    spec:
+      chart: ./scaffold/helm/myapp
+      sourceRef:
+        kind: GitRepository
+        name: config-repo
+        namespace: flux-system
+      version: ">=0.1.0"
+  valuesFrom:
+    - kind: ConfigMap
+      name: myapp-staging-values
+      valuesKey: values.yaml
+      targetPath: ""
+  targetNamespace: myapp-staging
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  rollback:
+    enable: true
+    retry: 3
+  test:
+    enable: true
+    timeout: 5m

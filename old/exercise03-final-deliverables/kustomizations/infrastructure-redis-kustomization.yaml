@@ -1,16 +1,15 @@
+---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: gitops-apps
+  name: infrastructure-redis
   namespace: flux-system
 spec:
-  interval: 2m
+  interval: 10m0s
+  path: ./infrastructure/helm-releases
+  prune: true
   sourceRef:
     kind: GitRepository
-    name: gitops-repo
-  path: ./exercise-01-git-source/apps
-  prune: true
-  wait: true
-  timeout: 3m
-
+    name: flux-system
+  timeout: 5m
 

@@ -1,0 +1,107 @@
+---
+# Development overlay for myapp
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: myapp-dev
+  labels:
+    app.kubernetes.io/name: myapp
+    app.kubernetes.io/part-of: myapp
+    environment: dev
+
+resources:
+  - ../../base
+
+namespace: myapp-dev
+
+namePrefix: dev-
+
+commonLabels:
+  environment: dev
+  app.kubernetes.io/instance: myapp-dev
+
+images:
+  - name: myapp
+    newTag: v1.2.3-dev
+
+patches:
+  - target:
+      kind: Deployment
+      name: myapp
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+      - op: replace
+        path: /spec/template/spec/containers/0/env/0/value
+        value: "dev"
+      - op: replace
+        path: /spec/template/spec/containers/0/env/1/value
+        value: "us-west-2"
+      - op: replace
+        path: /spec/template/spec/containers/0/env/2/value
+        value: "debug"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "64Mi"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "50m"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "128Mi"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: "100m"
+
+  - target:
+      kind: Ingress
+      name: myapp
+    patch: |-
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: "myapp.dev.example.com"
+      - op: replace
+        path: /spec/rules/0/host
+        value: "myapp.dev.example.com"
+
+configMapGenerator:
+  - name: myapp-config
+    behavior: merge
+    literals:
+      - LOG_LEVEL=debug
+      - METRICS_ENABLED=true
+      - TRACING_ENABLED=true
+      - DEBUG_MODE=true
+      - FEATURE_FLAG_A=true
+      - FEATURE_FLAG_B=false
+
+secretGenerator:
+  - name: myapp-secrets
+    behavior: merge
+    literals:
+      - DATABASE_URL=postgresql://dev-user:dev-pass@dev-db:5432/myapp_dev
+      - API_KEY=dev-api-key-12345
+      - JWT_SECRET=dev-jwt-secret-key
+
+patchesStrategicMerge:
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: myapp
+    spec:
+      template:
+        spec:
+          containers:
+          - name: myapp
+            env:
+            - name: ENVIRONMENT
+              value: "dev"
+            - name: REGION
+              value: "us-west-2"
+            - name: LOG_LEVEL
+              value: "debug"
+            - name: DEBUG_MODE
+              value: "true"

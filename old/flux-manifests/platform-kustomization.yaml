@@ -1,0 +1,45 @@
+---
+# Platform Kustomization - Deploys platform components
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: platform
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/name: platform
+    app.kubernetes.io/part-of: flux
+    environment: dev
+    region: us-west-2
+spec:
+  interval: 5m
+  path: "./platform"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: platform
+  serviceAccountName: platform-controller
+  timeout: 5m
+  retryInterval: 2m
+  postBuild:
+    substitute:
+      CLUSTER_NAME: "dev-us-west-2"
+      ENVIRONMENT: "dev"
+      REGION: "us-west-2"
+      DOMAIN_SUFFIX: "dev.example.com"
+    substituteFrom:
+      - kind: ConfigMap
+        name: platform-vars
+        optional: true
+  dependsOn:
+    - name: flux-system
+      namespace: flux-system
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: ingress-nginx-controller
+      namespace: platform
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: cert-manager
+      namespace: platform

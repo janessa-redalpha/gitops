@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "myapp.fullname" . }}-config
+  labels:
+    {{- include "myapp.labels" . | nindent 4 }}
+data:
+  app.properties: |
+    app.name={{ .Chart.Name }}
+    app.version={{ .Chart.AppVersion }}
+    app.mode={{ .Values.config.appMode }}
+    greeting={{ .Values.config.greeting }}
+    debug={{ .Values.config.debug }}
+    server.port={{ .Values.service.targetPort }}
+  config.yaml: |
+    app:
+      name: {{ .Chart.Name }}
+      version: {{ .Chart.AppVersion }}
+      mode: {{ .Values.config.appMode }}
+      greeting: {{ .Values.config.greeting }}
+      debug: {{ .Values.config.debug }}
+    server:
+      port: {{ .Values.service.targetPort }}
+    health:
+      enabled: {{ .Values.healthCheck.enabled }}
+      path: {{ .Values.healthCheck.path }}

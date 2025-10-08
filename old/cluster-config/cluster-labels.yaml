@@ -1,0 +1,76 @@
+---
+# Cluster Labels Configuration
+# This file defines the standard labels applied to all cluster resources
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-labels
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/name: cluster-labels
+    app.kubernetes.io/part-of: flux
+    environment: dev
+    region: us-west-2
+    cluster-type: workload
+    team: platform
+    cost-center: engineering
+data:
+  # Standard cluster labels
+  environment: "dev"          # dev, staging, prod
+  region: "us-west-2"         # us-west-2, us-east-1, eu-west-1
+  cluster-type: "workload"    # workload, management
+  team: "platform"           # platform, backend, frontend, data
+  cost-center: "engineering" # engineering, marketing, sales
+  
+  # Additional metadata
+  cluster-version: "1.28"
+  kubernetes-provider: "eks"
+  node-count: "5"
+  capacity-type: "on-demand"
+  
+---
+# Cluster Selection Rules
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-selection-rules
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/name: cluster-selection-rules
+    app.kubernetes.io/part-of: flux
+data:
+  # Selection rules for different environments
+  dev-clusters: |
+    environment=dev
+    cluster-type=workload
+  
+  staging-clusters: |
+    environment=staging
+    cluster-type=workload
+  
+  prod-clusters: |
+    environment=prod
+    cluster-type=workload
+  
+  # Regional selection rules
+  us-west-2-clusters: |
+    region=us-west-2
+  
+  us-east-1-clusters: |
+    region=us-east-1
+  
+  eu-west-1-clusters: |
+    region=eu-west-1
+  
+  # Combined selection rules
+  dev-us-west-2: |
+    environment=dev
+    region=us-west-2
+  
+  staging-us-east-1: |
+    environment=staging
+    region=us-east-1
+  
+  prod-all-regions: |
+    environment=prod

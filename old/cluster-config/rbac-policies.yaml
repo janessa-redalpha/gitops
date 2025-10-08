@@ -1,0 +1,138 @@
+---
+# RBAC Configuration for Multi-Cluster GitOps
+# ServiceAccount for platform components
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: platform-controller
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/name: platform-controller
+    app.kubernetes.io/part-of: flux
+
+---
+# ClusterRole for platform components
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: platform-controller
+  labels:
+    app.kubernetes.io/name: platform-controller
+    app.kubernetes.io/part-of: flux
+rules:
+  # Platform components permissions
+  - apiGroups: ["apps"]
+    resources: ["deployments", "daemonsets", "replicasets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["services", "configmaps", "secrets", "pods"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses", "networkpolicies"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["cert-manager.io"]
+    resources: ["certificates", "issuers", "clusterissuers"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+# ClusterRoleBinding for platform components
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: platform-controller
+  labels:
+    app.kubernetes.io/name: platform-controller
+    app.kubernetes.io/part-of: flux
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: platform-controller
+subjects:
+  - kind: ServiceAccount
+    name: platform-controller
+    namespace: flux-system
+
+---
+# ServiceAccount for application deployments
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: apps-controller
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/name: apps-controller
+    app.kubernetes.io/part-of: flux
+
+---
+# ClusterRole for application deployments
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: apps-controller
+  labels:
+    app.kubernetes.io/name: apps-controller
+    app.kubernetes.io/part-of: flux
+rules:
+  # Application deployment permissions
+  - apiGroups: ["apps"]
+    resources: ["deployments", "daemonsets", "replicasets", "statefulsets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["services", "configmaps", "secrets", "pods", "persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses", "networkpolicies"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+# ClusterRoleBinding for application deployments
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: apps-controller
+  labels:
+    app.kubernetes.io/name: apps-controller
+    app.kubernetes.io/part-of: flux
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: apps-controller
+subjects:
+  - kind: ServiceAccount
+    name: apps-controller
+    namespace: flux-system
+
+---
+# NetworkPolicy for multi-tenancy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: flux-system-network-policy
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/name: flux-system
+    app.kubernetes.io/part-of: flux
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: flux-system
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: flux-system
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53

@@ -1,0 +1,22 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: team-b-apps
+  namespace: team-b
+  labels:
+    tenant: team-b
+spec:
+  interval: 1m
+  url: https://github.com/team-b/apps
+  # Or use SSH: ssh://git@github.com/team-b/apps
+  ref:
+    branch: main
+  secretRef:
+    name: team-b-git-auth
+  ignore: |
+    # Exclude all files
+    /*
+    # Include only this team's directory
+    !/team-b/
+

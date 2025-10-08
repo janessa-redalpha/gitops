@@ -1,0 +1,56 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: myapp-dev
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/name: myapp
+    app.kubernetes.io/instance: myapp-dev
+    environment: development
+spec:
+  interval: 1m
+  chart:
+    spec:
+      chart: ./scaffold/helm/myapp
+      sourceRef:
+        kind: GitRepository
+        name: config-repo
+        namespace: flux-system
+      version: ">=0.1.0"
+  values:
+    replicaCount: 1
+    image:
+      repository: nginx
+      tag: "1.27-alpine"
+      pullPolicy: Always
+    config:
+      appMode: "development"
+      greeting: "Hello from Development!"
+      debug: true
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    healthCheck:
+      enabled: true
+      path: /health
+      initialDelaySeconds: 10
+      periodSeconds: 5
+    secrets:
+      enabled: false
+  targetNamespace: myapp-dev
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  rollback:
+    enable: true
+    retry: 3

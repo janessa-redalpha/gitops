@@ -1,0 +1,32 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: team-b-apps
+  namespace: team-b
+  labels:
+    tenant: team-b
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: team-b-apps
+    namespace: team-b
+  path: ./team-b
+  prune: true
+  wait: true
+  timeout: 2m
+  # Constrain reconciliation to tenant namespace
+  targetNamespace: team-b
+  # Use tenant-specific service account with limited RBAC
+  serviceAccountName: flux-reconciler
+  # Force all resources into the target namespace
+  patches:
+    - patch: |
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: team-b
+      target:
+        kind: Namespace
+

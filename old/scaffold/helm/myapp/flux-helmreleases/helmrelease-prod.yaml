@@ -1,0 +1,53 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: myapp-prod
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/name: myapp
+    app.kubernetes.io/instance: myapp-prod
+    environment: production
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: ./scaffold/helm/myapp
+      sourceRef:
+        kind: GitRepository
+        name: config-repo
+        namespace: flux-system
+      version: ">=0.1.0"
+  valuesFrom:
+    - kind: ConfigMap
+      name: myapp-prod-values
+      valuesKey: values.yaml
+      targetPath: ""
+    - kind: Secret
+      name: myapp-prod-secrets
+      valuesKey: secrets.yaml
+      targetPath: "secrets"
+  targetNamespace: myapp-prod
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+    timeout: 10m
+  uninstall:
+    keepHistory: true
+  rollback:
+    enable: true
+    retry: 5
+  test:
+    enable: true
+    timeout: 10m
+  # Production-specific configurations
+  postRenderers:
+    - kustomize:
+        patches:
+          - patch: |
+              - op: add
+                path: /metadata/annotations/backup.velero.io~1backup-volumes
+                value: data

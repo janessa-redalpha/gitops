@@ -1,0 +1,61 @@
+# Development Environment Values
+# Override default values for development environment
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "1.27-alpine"
+  pullPolicy: Always
+
+# Development-specific annotations
+podAnnotations:
+  app.env: "development"
+  app.version: "dev-latest"
+
+# Development resource limits (lower)
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# No autoscaling in development
+autoscaling:
+  enabled: false
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+# Application configuration for development
+config:
+  appMode: "development"
+  greeting: "Hello from Development!"
+  debug: true
+
+# Environment variables
+env:
+  - name: NODE_ENV
+    value: "development"
+  - name: LOG_LEVEL
+    value: "debug"
+
+# Health check configuration
+healthCheck:
+  enabled: true
+  path: /health
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Secrets disabled in development (using mock values)
+secrets:
+  enabled: false
+  apiKey: "dev-mock-api-key"
+  databaseUrl: "postgresql://dev:dev@localhost:5432/devdb"

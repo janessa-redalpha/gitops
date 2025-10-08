@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+  labels:
+    app: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: ghcr.io/ORG/REPO/myapp:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: GREETING
+          valueFrom:
+            configMapKeyRef:
+              name: myapp-config
+              key: GREETING
+

@@ -1,0 +1,121 @@
+---
+# Multi-Tenancy Boundaries Configuration
+# Network Policies for tenant isolation
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all-ingress
+  namespace: team-backend
+  labels:
+    app.kubernetes.io/name: deny-all-ingress
+    app.kubernetes.io/part-of: flux
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+
+---
+# Network Policy for team backend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: team-backend-network-policy
+  namespace: team-backend
+  labels:
+    app.kubernetes.io/name: team-backend-network-policy
+    app.kubernetes.io/part-of: flux
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: team-backend
+    - namespaceSelector:
+        matchLabels:
+          name: platform
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: team-backend
+    - namespaceSelector:
+        matchLabels:
+          name: platform
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+
+---
+# Pod Security Policy for team backend
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: team-backend-psp
+  labels:
+    app.kubernetes.io/name: team-backend-psp
+    app.kubernetes.io/part-of: flux
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  seLinux:
+    rule: 'RunAsAny'
+  fsGroup:
+    rule: 'RunAsAny'
+
+---
+# ClusterRole for PodSecurityPolicy
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: team-backend-psp
+  labels:
+    app.kubernetes.io/name: team-backend-psp
+    app.kubernetes.io/part-of: flux
+rules:
+  - apiGroups: ['policy']
+    resources: ['podsecuritypolicies']
+    verbs: ['use']
+    resourceNames:
+    - team-backend-psp
+
+---
+# ClusterRoleBinding for PodSecurityPolicy
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: team-backend-psp-binding
+  labels:
+    app.kubernetes.io/name: team-backend-psp-binding
+    app.kubernetes.io/part-of: flux
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: team-backend-psp
+subjects:
+  - kind: Group
+    name: team-backend
+    apiGroup: rbac.authorization.k8s.io
