@@ -6,7 +6,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1m
-  url: https://github.com/jnssa/GitOps
+  url: https://github.com/janessa-redalpha/gitops
   ref:
     branch: dev
   secretRef:
