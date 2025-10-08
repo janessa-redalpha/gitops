@@ -1,0 +1,8 @@
+NAMESPACE  	NAME                	REVISION             	SUSPENDED	READY	MESSAGE                                                                                                        
+flux-system	flux-system         	main@sha1:65692c55   	False    	True 	stored artifact for revision 'main@sha1:65692c55'                                                             	
+flux-system	gitops-repo         	main@sha1:65692c55   	False    	True 	stored artifact for revision 'main@sha1:65692c55'                                                             	
+flux-system	gitops-repo-dev     	dev@sha1:ab6b79be    	False    	True 	stored artifact for revision 'dev@sha1:ab6b79be'                                                              	
+flux-system	gitops-repo-prod    	prod@sha1:ab6b79be   	False    	True 	stored artifact for revision 'prod@sha1:ab6b79be'                                                             	
+flux-system	gitops-repo-staging 	staging@sha1:ab6b79be	False    	True 	stored artifact for revision 'staging@sha1:ab6b79be'                                                          	
+flux-system	versioned-app-fixed 	v1.0.0@sha1:4955617a 	False    	True 	stored artifact for revision 'v1.0.0@sha1:4955617a'                                                           	
+flux-system	versioned-app-semver	                     	False    	False	failed to checkout and determine revision: unable to checkout tag 'v1.1.0': worktree contains unstaged changes	

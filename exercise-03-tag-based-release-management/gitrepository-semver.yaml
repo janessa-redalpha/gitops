@@ -1,0 +1,14 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: versioned-app-semver
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: https://github.com/janessa-redalpha/gitops
+  ref:
+    semver: "^1.0.0"  # Automatically tracks latest 1.x version
+  secretRef:
+    name: gitops-repo-auth
+
