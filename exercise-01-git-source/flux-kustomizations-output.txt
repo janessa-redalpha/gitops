@@ -1,6 +1,0 @@
-NAMESPACE  	NAME                	REVISION          	SUSPENDED	READY	MESSAGE                              
-flux-system	backend-app         	main@sha1:6982cbbc	False    	True 	Applied revision: main@sha1:6982cbbc	
-flux-system	flux-system         	main@sha1:6982cbbc	False    	True 	Applied revision: main@sha1:6982cbbc	
-flux-system	frontend-app        	main@sha1:6982cbbc	False    	True 	Applied revision: main@sha1:6982cbbc	
-flux-system	gitops-apps         	main@sha1:6982cbbc	False    	True 	Applied revision: main@sha1:6982cbbc	
-flux-system	infrastructure-redis	main@sha1:6982cbbc	False    	True 	Applied revision: main@sha1:6982cbbc	
