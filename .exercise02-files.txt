@@ -1,0 +1,120 @@
+================================================================================
+EXERCISE 02: EXTERNAL SECRET MANAGEMENT SETUP - FILES CREATED
+================================================================================
+
+📝 DOCUMENTATION (3 files, ~1200 lines)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ EXTERNAL_SECRETS_SUBMISSION.md        (642 lines) - Complete submission
+✓ EXTERNAL_SECRETS_QUICKSTART.md        (232 lines) - Quick reference
+✓ EXERCISE_02_SUMMARY.md                (223 lines) - Summary checklist
+
+🏗️ INFRASTRUCTURE (4 files)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ infrastructure/sources/external-secrets-repo.yaml
+  └─ HelmRepository for External Secrets charts
+
+✓ infrastructure/helm-releases/external-secrets-operator.yaml
+  └─ HelmRelease to install ESO operator
+
+✓ infrastructure/helm-releases/vault-dev.yaml
+  └─ Vault deployment in dev mode (Deployment + Service)
+
+✓ infrastructure/helm-releases/kustomization.yaml (UPDATED)
+  └─ Added external-secrets-operator.yaml and vault-dev.yaml
+
+🎯 TEAM-A APPLICATION (5 files)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ apps/team-a/secret-store.yaml
+  └─ SecretStore CRD pointing to Vault
+  └─ vault-token Secret (dev mode token)
+
+✓ apps/team-a/external-secret.yaml
+  └─ ExternalSecret CRD mapping Vault path to K8s Secret
+
+✓ apps/team-a/secret-consumer-app.yaml
+  └─ Sample Deployment that reads the secret via env var
+
+✓ apps/team-a/kustomization.yaml (UPDATED)
+  └─ Added secret-store, external-secret, and secret-consumer-app
+
+✓ apps/team-a/README.md (NEW)
+  └─ Team-A specific documentation
+
+🔧 CLUSTER CONFIG (1 file)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ clusters/dev/minikube/sources/kustomization.yaml (UPDATED)
+  └─ Added external-secrets-repo.yaml reference
+
+🚀 AUTOMATION SCRIPTS (1 file)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ scripts/setup-vault-secret.sh (executable)
+  └─ Automated script to initialize Vault with demo secret
+
+================================================================================
+TOTAL: 14 files changed, 1,450+ lines added
+================================================================================
+
+📊 WHAT GETS DEPLOYED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Namespace: external-secrets
+├─ Deployment: external-secrets (ESO operator)
+└─ CRDs: SecretStore, ExternalSecret, ClusterSecretStore
+
+Namespace: vault
+├─ Deployment: vault (dev mode)
+└─ Service: vault (ClusterIP on port 8200)
+
+Namespace: team-a (additions)
+├─ SecretStore: vault-backend
+├─ ExternalSecret: app-config
+├─ Secret: vault-token (static token)
+├─ Secret: app-secret (auto-created by ESO)
+└─ Deployment: secret-consumer (sample app)
+
+================================================================================
+🎯 EXERCISE REQUIREMENTS MET
+================================================================================
+
+✅ ESO installed via Helm
+✅ Target namespace exists (team-a)
+✅ Namespace-scoped SecretStore created
+✅ ExternalSecret maps remote key to K8s Secret
+✅ Sample app consumes secret via environment variable
+✅ All resources committed to Git
+✅ Provider: HashiCorp Vault (KV v2)
+✅ Documentation provided
+
+================================================================================
+📋 SUBMISSION DELIVERABLES
+================================================================================
+
+1. SecretStore YAML:           apps/team-a/secret-store.yaml
+2. ExternalSecret YAML:        apps/team-a/external-secret.yaml
+3. Sample App YAML:            apps/team-a/secret-consumer-app.yaml
+4. Verification Commands:      In EXTERNAL_SECRETS_SUBMISSION.md
+5. Provider Description:       In all documentation files
+
+================================================================================
+🚀 NEXT STEPS
+================================================================================
+
+1. Review the changes:
+   $ git status
+   $ git diff --cached
+
+2. Commit the changes:
+   $ git commit -m "Add Exercise 02: External Secrets Operator with Vault"
+
+3. Push to remote:
+   $ git push origin main
+
+4. Deploy and verify:
+   $ flux reconcile source git flux-system
+   $ flux reconcile kustomization infrastructure
+   $ flux reconcile kustomization team-a-apps
+   $ ./scripts/setup-vault-secret.sh
+   $ kubectl get externalsecret,secret,pod -n team-a
+
+================================================================================
+

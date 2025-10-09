@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: team-b-config
+  namespace: team-b
+data:
+  app.name: "Team B Application"
+  environment: "development"
+  team: "team-b"
+

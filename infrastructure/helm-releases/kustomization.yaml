@@ -4,6 +4,9 @@ resources:
 - redis-simple.yaml
 - external-secrets-operator.yaml
 - vault-dev.yaml
+- nginx-ingress.yaml
+- flagger.yaml
+- flagger-loadtester.yaml
 # Using simple Redis deployment instead of Helm due to image availability issues
 # - redis-release.yaml
 

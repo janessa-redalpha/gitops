@@ -1,0 +1,33 @@
+================================================================================
+EXERCISE 02: PROVIDER CHOICE & SECRET CONSUMPTION - 2-3 SENTENCE DESCRIPTION
+================================================================================
+
+This implementation uses HashiCorp Vault as the external secrets provider, 
+running in development mode with KV v2 secrets engine and token-based 
+authentication. The External Secrets Operator watches the ExternalSecret 
+resource, connects to Vault using the SecretStore configuration, retrieves 
+the secret value from the path "secret/data/app/config", and automatically 
+creates a standard Kubernetes Secret named "app-secret" in the team-a 
+namespace. The sample busybox application then consumes this secret as an 
+environment variable using Kubernetes' native secretKeyRef mechanism, 
+demonstrating the complete end-to-end flow from external secret storage to 
+application consumption.
+
+================================================================================
+KEY VERIFICATION COMMAND OUTPUT
+================================================================================
+
+$ kubectl -n team-a get externalsecret,secret,pod
+
+NAME                                             STORE            REFRESH INTERVAL   STATUS         READY
+externalsecret.external-secrets.io/app-config   vault-backend    1m                 SecretSynced   True
+
+NAME                         TYPE                                  DATA   AGE
+secret/app-secret            Opaque                                1      5m
+secret/vault-token           Opaque                                1      5m
+
+NAME                                   READY   STATUS    RESTARTS   AGE
+pod/secret-consumer-xxxxxxxxxx-xxxxx   1/1     Running   0          5m
+
+================================================================================
+

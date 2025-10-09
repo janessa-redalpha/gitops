@@ -3,6 +3,8 @@ kind: Kustomization
 resources:
 - helm-repo.yaml
 - ../../../../infrastructure/sources/external-secrets-repo.yaml
+- ../../../../infrastructure/sources/nginx-ingress-repo.yaml
+- ../../../../infrastructure/sources/flagger-repo.yaml
 # Note: In production environments, frontend-repo.yaml and backend-repo.yaml
 # would point to separate Git repositories owned by different teams.
 # For this demo, we use the flux-system repository with different paths/intervals
