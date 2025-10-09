@@ -4,4 +4,7 @@ resources:
   - configmap.yaml
   - deployment.yaml
   - service.yaml
+  - secret-store.yaml
+  - external-secret.yaml
+  - secret-consumer-app.yaml
 
