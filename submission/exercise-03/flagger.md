@@ -55,13 +55,9 @@ At each 30-second interval, Flagger validates metrics before proceeding to the n
 
 1. **acceptance-test** (pre-rollout)
    - Type: Pre-rollout validation
-   - URL: `http://flagger-loadtester.test/`
    - Timeout: 30 seconds
-   - Command: `curl -sd 'test' http://podinfo-canary.test/token | grep token`
    - Purpose: Validates canary endpoint responds correctly before any traffic is shifted
 
 2. **load-test** (during rollout)
    - Type: Rollout traffic generation
-   - URL: `http://flagger-loadtester.test/`
-   - Command: `hey -z 2m -q 10 -c 2 -host podinfo.local http://ingress-nginx-controller.ingress-nginx/`
    - Purpose: Generates consistent traffic during rollout to ensure meaningful metrics collection
