@@ -1,0 +1,14 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: gitops-repo-staging
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: https://github.com/janessa-redalpha/gitops
+  ref:
+    branch: staging
+  secretRef:
+    name: gitops-repo-auth
+

@@ -1,0 +1,8 @@
+NAMESPACE  	NAME                	REVISION             	SUSPENDED	READY  	MESSAGE                                 
+flux-system	backend-app         	main@sha1:ab6b79be   	False    	True   	Applied revision: main@sha1:ab6b79be   	
+flux-system	flux-system         	main@sha1:ab6b79be   	False    	Unknown	Reconciliation in progress             	
+flux-system	frontend-app        	main@sha1:ab6b79be   	False    	True   	Applied revision: main@sha1:ab6b79be   	
+flux-system	infrastructure-redis	main@sha1:ab6b79be   	False    	True   	Applied revision: main@sha1:ab6b79be   	
+flux-system	myapp-dev           	dev@sha1:ab6b79be    	False    	True   	Applied revision: dev@sha1:ab6b79be    	
+flux-system	myapp-prod          	prod@sha1:ab6b79be   	False    	True   	Applied revision: prod@sha1:ab6b79be   	
+flux-system	myapp-staging       	staging@sha1:ab6b79be	False    	True   	Applied revision: staging@sha1:ab6b79be	
