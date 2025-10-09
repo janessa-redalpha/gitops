@@ -1,0 +1,26 @@
+---
+# Alternative: Single Receiver for All Environments
+# This receiver triggers reconciliation for all GitRepositories on any push
+apiVersion: notification.toolkit.fluxcd.io/v1
+kind: Receiver
+metadata:
+  name: gitops-receiver-all
+  namespace: flux-system
+spec:
+  type: github
+  events:
+    - "ping"
+    - "push"
+  secretRef:
+    name: webhook-token
+  resources:
+    - apiVersion: source.toolkit.fluxcd.io/v1
+      kind: GitRepository
+      name: gitops-repo-dev
+    - apiVersion: source.toolkit.fluxcd.io/v1
+      kind: GitRepository
+      name: gitops-repo-staging
+    - apiVersion: source.toolkit.fluxcd.io/v1
+      kind: GitRepository
+      name: gitops-repo-prod
+

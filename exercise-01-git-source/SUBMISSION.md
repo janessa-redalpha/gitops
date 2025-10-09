@@ -44,3 +44,5 @@ Successfully configured FluxCD to monitor the Git repository with proper synchro
 All resources are reconciled and Ready=True.
 
 
+
+

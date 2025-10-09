@@ -83,3 +83,5 @@ The fixed tag implementation demonstrates:
 
 The semver cache issue is a FluxCD bug and doesn't impact your completion of the exercise requirements.
 
+
+
