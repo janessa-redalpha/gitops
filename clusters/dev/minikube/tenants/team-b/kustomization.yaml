@@ -1,18 +1,6 @@
-apiVersion: kustomize.toolkit.fluxcd.io/v1
+apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-metadata:
-  name: team-b-apps
-  namespace: flux-system
-spec:
-  interval: 5m
-  targetNamespace: team-b
-  serviceAccountName: team-b-sa
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  path: ./apps/team-b
-  prune: true
-  wait: true
-  timeout: 2m
+resources:
+  - namespace.yaml
+  - rbac.yaml
 
