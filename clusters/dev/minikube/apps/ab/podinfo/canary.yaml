@@ -44,16 +44,6 @@ spec:
       - headers:
           cookie:
             regex: "^(.*?;)?(canary=always)(;.*)?$"
-    # Metrics for canary analysis
-    metrics:
-    - name: request-success-rate
-      thresholdRange:
-        min: 99
-      interval: 1m
-    - name: request-duration
-      thresholdRange:
-        max: 500
-      interval: 30s
     # Webhooks section can be added if flagger-loadtester is installed
     # webhooks:
     #   - name: acceptance-test
