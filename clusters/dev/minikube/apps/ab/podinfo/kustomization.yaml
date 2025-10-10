@@ -2,8 +2,10 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
-  - deployment.yaml
-  - service.yaml
-  - ingress.yaml
-  - canary.yaml
+  - deployment-primary.yaml
+  - deployment-canary.yaml
+  - service-primary.yaml
+  - service-canary.yaml
+  - ingress-primary.yaml
+  - ingress-canary.yaml
 

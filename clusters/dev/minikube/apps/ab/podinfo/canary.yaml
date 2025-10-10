@@ -27,33 +27,13 @@ spec:
     targetPort: 9898
   analysis:
     # Schedule interval (default 60s)
-    interval: 30s
+    interval: 1m
     # Max number of failed metric checks before rollback
-    threshold: 5
-    # Number of checks to run before promoting the canary
-    iterations: 10
-    # A/B testing match conditions
-    # Traffic matching these conditions will be routed to canary
-    # Weight settings are ignored during A/B testing
-    match:
-      # Match requests with X-Canary header set to "insider"
-      - headers:
-          x-canary:
-            exact: "insider"
-      # Match requests with cookie containing canary=always
-      - headers:
-          cookie:
-            regex: "^(.*?;)?(canary=always)(;.*)?$"
-    # Metrics disabled for simple demo without Prometheus
-    # metrics:
-    # - name: request-success-rate
-    #   thresholdRange:
-    #     min: 99
-    #   interval: 1m
-    # - name: request-duration
-    #   thresholdRange:
-    #     max: 500
-    #   interval: 30s
+    threshold: 10
+    # Maximum number of iterations
+    maxWeight: 50
+    # stepWeight for progressive traffic increase
+    stepWeight: 10
     # Webhooks section can be added if flagger-loadtester is installed
     # webhooks:
     #   - name: acceptance-test

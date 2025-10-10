@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: podinfo-primary
+  namespace: test
+  labels:
+    app: podinfo
+    version: primary
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    app: podinfo
+    version: primary
+
