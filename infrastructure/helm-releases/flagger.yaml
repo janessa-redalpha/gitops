@@ -28,6 +28,7 @@ spec:
     remediation:
       retries: 3
   values:
-    metricsServer: http://flagger-prometheus.flagger-system:9090
+    # Disable Prometheus metrics for simple A/B testing demo
+    # metricsServer: http://flagger-prometheus.flagger-system:9090
     meshProvider: nginx
 
