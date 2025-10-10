@@ -85,6 +85,11 @@ spec:
     kind: Deployment
     name: podinfo
   progressDeadlineSeconds: 60
+  # Reference to the ingress for A/B testing
+  ingressRef:
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    name: podinfo
   service:
     port: 80
     targetPort: 9898
