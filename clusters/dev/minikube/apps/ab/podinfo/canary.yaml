@@ -5,36 +5,24 @@ metadata:
   name: podinfo
   namespace: test
 spec:
-  # Provider must be nginx for A/B testing with NGINX Ingress
   provider: nginx
-  # Deployment reference
   targetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: podinfo
-  # The maximum time in seconds for the canary deployment
-  # to make progress before it is rolled back (default 600s)
-  progressDeadlineSeconds: 60
-  # Reference to the ingress for A/B testing
   ingressRef:
     apiVersion: networking.k8s.io/v1
     kind: Ingress
     name: podinfo
+  progressDeadlineSeconds: 60
   service:
-    # Service port number
     port: 80
-    # Container port number or name
     targetPort: 9898
   analysis:
-    # Schedule interval (default 60s)
-    interval: 30s
-    # Max number of failed metric checks before rollback
+    interval: 1m
     threshold: 5
-    # Number of checks to run before promotion
     iterations: 10
     # A/B testing match conditions
-    # Traffic matching these conditions will be routed to canary
-    # Weight settings are ignored during A/B testing
     match:
       # Match requests with X-Canary header set to "insider"
       - headers:
@@ -44,18 +32,3 @@ spec:
       - headers:
           cookie:
             regex: "^(.*?;)?(canary=always)(;.*)?$"
-    # Webhooks section can be added if flagger-loadtester is installed
-    # webhooks:
-    #   - name: acceptance-test
-    #     type: pre-rollout
-    #     url: http://flagger-loadtester.test/
-    #     timeout: 30s
-    #     metadata:
-    #       type: bash
-    #       cmd: "curl -sd 'test' http://podinfo-canary.test/token | grep token"
-    #   - name: load-test
-    #     type: rollout
-    #     url: http://flagger-loadtester.test/
-    #     metadata:
-    #       cmd: "hey -z 2m -q 10 -c 2 -H 'X-Canary: insider' -host app.example.com http://ingress-nginx-controller.ingress-nginx/"
-

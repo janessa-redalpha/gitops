@@ -4,8 +4,6 @@ kind: Service
 metadata:
   name: podinfo
   namespace: test
-  labels:
-    app: podinfo
 spec:
   type: ClusterIP
   ports:
@@ -13,10 +11,6 @@ spec:
     targetPort: http
     protocol: TCP
     name: http
-  - port: 9797
-    targetPort: http-metrics
-    protocol: TCP
-    name: http-metrics
   selector:
     app: podinfo
 

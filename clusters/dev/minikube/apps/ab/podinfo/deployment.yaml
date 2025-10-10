@@ -4,8 +4,6 @@ kind: Deployment
 metadata:
   name: podinfo
   namespace: test
-  labels:
-    app: podinfo
 spec:
   replicas: 1
   selector:
@@ -19,48 +17,25 @@ spec:
       containers:
       - name: podinfod
         image: ghcr.io/stefanprodan/podinfo:6.5.3
-        imagePullPolicy: IfNotPresent
         ports:
         - name: http
           containerPort: 9898
           protocol: TCP
-        - name: http-metrics
-          containerPort: 9797
-          protocol: TCP
-        - name: grpc
-          containerPort: 9999
-          protocol: TCP
         command:
         - ./podinfo
         - --port=9898
-        - --port-metrics=9797
-        - --grpc-port=9999
-        - --grpc-service-name=podinfo
-        - --level=info
-        - --random-delay=false
-        - --random-error=false
-        env:
-        - name: PODINFO_UI_COLOR
-          value: "#34577c"
         livenessProbe:
           httpGet:
             path: /healthz
             port: 9898
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /readyz
             port: 9898
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          timeoutSeconds: 5
         resources:
-          limits:
-            cpu: 100m
-            memory: 64Mi
           requests:
             cpu: 10m
             memory: 16Mi
-
+          limits:
+            cpu: 100m
+            memory: 64Mi

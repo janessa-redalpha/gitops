@@ -4,18 +4,13 @@ kind: Ingress
 metadata:
   name: podinfo
   namespace: test
-  labels:
-    app: podinfo
   annotations:
-    kubernetes.io/ingress.class: nginx
     # Enable cookie-based session affinity for sticky sessions
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/session-cookie-name: "abtest"
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
-    # Optional: configure cookie expiry and path
-    nginx.ingress.kubernetes.io/session-cookie-max-age: "3600"
-    nginx.ingress.kubernetes.io/session-cookie-path: "/"
 spec:
+  ingressClassName: nginx
   rules:
   - host: app.example.com
     http:
